@@ -1,17 +1,20 @@
 package com.ssuamje.composetoolkit.ui.designsystem.foundation
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.sp
 import com.ssuamje.composetoolkit.R
+
+/**
+ * 디자인 시스템에 사용되는 폰트 오브젝트입니다.
+ * 위계를 가진 구조로 사용자가 직관적으로 사용할 수 있도록 작성하였습니다.
+ *
+ */
 
 object DSFonts {
     object Title {
@@ -163,59 +166,6 @@ object DSFonts {
             ),
         )
     }
-}
-
-class StyleTagScope {
-    internal val styles = mutableListOf<TextStyle>()
-
-    operator fun TextAlign.unaryPlus() {
-        styles.add(TextStyle(textAlign = this))
-    }
-    
-    operator fun TextStyle.unaryPlus() {
-        styles.add(this)
-    }
-
-    operator fun Color.unaryPlus() {
-        styles.add(TextStyle(color = this))
-    }
-}
-
-private fun String.applyStyles(styles: List<TextStyle>): AnnotatedString {
-    val combinedStyle = styles.fold(TextStyle()) { acc, style ->
-        acc.merge(style)
-    }
-
-    return AnnotatedString.Builder().apply {
-        pushStyle(combinedStyle.toSpanStyle())
-        pushStyle(combinedStyle.toParagraphStyle())
-        append(this@applyStyles)
-        pop()
-        pop()
-    }.toAnnotatedString()
-}
-
-private fun AnnotatedString.applyStyles(styles: List<TextStyle>): AnnotatedString {
-    val combinedStyle = styles.fold(TextStyle()) { acc, style ->
-        acc.merge(style)
-    }
-    val spanStyle = combinedStyle.toSpanStyle()
-
-    return AnnotatedString.Builder().apply {
-        pushStyle(spanStyle)
-        append(this@applyStyles)
-        pop()
-    }.toAnnotatedString()
-}
-
-fun AnnotatedString.styleText(block: StyleTagScope.() -> Unit): AnnotatedString {
-    val scope = StyleTagScope().apply(block)
-    return this.applyStyles(scope.styles)
-}
-
-fun String.styleText(block: StyleTagScope.() -> Unit): AnnotatedString {
-    val scope = StyleTagScope().apply(block)
-    return this.applyStyles(scope.styles)
 }
 
 val pretendard = FontFamily(
