@@ -31,7 +31,7 @@ import com.ssuamje.composetoolkit.previews.Previewer
 @OptIn(ExperimentalLayoutApi::class)
 @Preview
 @Composable
-fun TextMarkupTagPreview() {
+fun MarkupTagPreview() {
     var text by remember { mutableStateOf("hello world!") }
 
     Previewer.Theme {
@@ -48,7 +48,7 @@ fun TextMarkupTagPreview() {
                 +DSColors.White
             })
             Text(
-                text = text.applyMarkupStyle(),
+                text = text.applyMarkup(),
                 modifier = Modifier
                     .background(DSColors.Black)
                     .padding(20.dp)
@@ -60,7 +60,7 @@ fun TextMarkupTagPreview() {
                 verticalArrangement = Arrangement.Center,
                 maxItemsInEachRow = 3,
             ) {
-                TextMarkupTag.entries.forEach {
+                MarkupTag.entries.forEach {
                     Button(onClick = {
                         text = text.markup(it)
                     }) {
@@ -73,7 +73,7 @@ fun TextMarkupTagPreview() {
 }
 
 
-enum class TextMarkupTag(val tag: String, val style: TextStyle) {
+enum class MarkupTag(val tag: String, val style: TextStyle) {
 
     // Colors
     BLACK("cblack", TextStyle(color = Color.Black)),
@@ -132,34 +132,34 @@ enum class TextMarkupTag(val tag: String, val style: TextStyle) {
             }
         }
 
-        fun combine(vararg tags: TextMarkupTag): TextStyle {
+        fun combine(vararg tags: MarkupTag): TextStyle {
             return tags.fold(TextStyle()) { acc, tag ->
                 acc.merge(tag.style)
             }
         }
 
-        fun fromStartTag(tag: String): TextMarkupTag? = entries.find { it.start == tag }
-        fun fromEndTag(tag: String): TextMarkupTag? = entries.find { it.end == tag }
+        fun fromStartTag(tag: String): MarkupTag? = entries.find { it.start == tag }
+        fun fromEndTag(tag: String): MarkupTag? = entries.find { it.end == tag }
     }
 }
 
-fun String.markup(vararg tags: TextMarkupTag): String {
+fun String.markup(vararg tags: MarkupTag): String {
     return tags.fold(this) { acc, tag -> "${tag.start}$acc${tag.end}" }
 }
 
-fun String.applyMarkupStyle(): AnnotatedString {
+fun String.applyMarkup(): AnnotatedString {
     if (!isTagValid(this)) return AnnotatedString(this)
     val builder = AnnotatedString.Builder()
     var index = 0
-    val tagStack = mutableListOf<TextMarkupTag>()
+    val tagStack = mutableListOf<MarkupTag>()
 
     while (index < this.length) {
         if (this.startsWith("<", index)) {
             val endIndex = this.indexOf(">", index)
             if (endIndex != -1) {
                 val tag = this.substring(index, endIndex + 1)
-                val startTag = TextMarkupTag.fromStartTag(tag)
-                val endTag = TextMarkupTag.fromEndTag(tag)
+                val startTag = MarkupTag.fromStartTag(tag)
+                val endTag = MarkupTag.fromEndTag(tag)
                 when {
                     startTag != null -> {
                         tagStack.add(startTag)
@@ -182,16 +182,16 @@ fun String.applyMarkupStyle(): AnnotatedString {
                 tagStack.fold(TextStyle()) { acc, styleTag -> acc.merge(styleTag.style) }
             builder.pushStyle(currentStyle.toSpanStyle())
 
-            val nextTagIndex = this@applyMarkupStyle.indexOf("<", index)
+            val nextTagIndex = this@applyMarkup.indexOf("<", index)
             val substringEnd =
-                if (nextTagIndex == -1) this@applyMarkupStyle.length else nextTagIndex
+                if (nextTagIndex == -1) this@applyMarkup.length else nextTagIndex
 
-            if (index <= substringEnd && substringEnd <= this@applyMarkupStyle.length) {
-                val textSegment = this@applyMarkupStyle.substring(index, substringEnd)
+            if (index <= substringEnd && substringEnd <= this@applyMarkup.length) {
+                val textSegment = this@applyMarkup.substring(index, substringEnd)
                 builder.append(textSegment)
                 index = substringEnd
             } else {
-                throw StringIndexOutOfBoundsException("Invalid substring indices: begin=$index, end=$substringEnd, length=${this@applyMarkupStyle.length}")
+                throw StringIndexOutOfBoundsException("Invalid substring indices: begin=$index, end=$substringEnd, length=${this@applyMarkup.length}")
             }
 
             builder.pop()
