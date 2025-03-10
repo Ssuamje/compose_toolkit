@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.ssuamje.composetoolkit"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.ssuamje.composetoolkit"
