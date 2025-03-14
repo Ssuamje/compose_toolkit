@@ -33,6 +33,8 @@ import com.ssuamje.composetoolkit.previews.Previewer
 @Composable
 fun MarkupTagPreview() {
     var text by remember { mutableStateOf("hello world!") }
+    val exampleText =
+        remember { "<ftitles><cwhite>you can use <cred>partial highlight!</cred></cwhite></ftitles>" }
 
     Previewer.Theme {
         Column(
@@ -43,6 +45,7 @@ fun MarkupTagPreview() {
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(exampleText.applyMarkup())
             Text(text = text.styleText {
                 +DSFonts.Body.L
                 +DSColors.White

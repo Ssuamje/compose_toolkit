@@ -33,7 +33,7 @@ import com.ssuamje.composetoolkit.ui.designsystem.foundation.styleText
 
 @Preview
 @Composable
-fun Preview() {
+fun FunnelPreview() {
     val fastTransition: AnimatedContentTransitionScope<Any>.() -> ContentTransform = {
         slideInHorizontally { it } togetherWith slideOutHorizontally { -it }
     }
