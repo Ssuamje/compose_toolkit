@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Compose Toolkit</string>
+    <string name="test_with_two_strings">%s &amp; %s</string>
 </resources>
