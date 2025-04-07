@@ -36,6 +36,13 @@ abstract class OverlayScope<T : OverlayContent> {
         contents.clear()
     }
 
+    open fun update(id: OverlayId, content: T) {
+        val index = contents.indexOfFirst { it.id == id }
+        if (index != -1) {
+            contents[index] = content
+        }
+    }
+
     @Composable
     protected fun getContents(): SnapshotStateList<T> = contents
 

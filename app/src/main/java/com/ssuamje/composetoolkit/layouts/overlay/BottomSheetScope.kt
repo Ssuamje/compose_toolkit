@@ -7,19 +7,26 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +35,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,7 +59,7 @@ fun BottomSheetOverlayPreview() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black)
+                .background(DSColors.Background)
                 .padding(it),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -79,26 +88,28 @@ class BottomSheetScope : OverlayScope<BottomSheetScope.BottomSheetContent>() {
         override val id: OverlayId = OverlayId(),
         val isBackgroundClickDismissable: Boolean = true,
         val isBackgroundDimmed: Boolean = true,
-        var isVisible: Boolean = true,
+        val isDraggable: Boolean = true,
+        private val _isVisible: MutableState<Boolean> = mutableStateOf(true),
+        val isVisible: State<Boolean> = _isVisible,
         override val dismiss: () -> Unit = {
             close(id)
         },
         override val composable: @Composable (OverlayId) -> Unit
     ) : OverlayContent {
-
         fun hide() {
-            isVisible = false
+            _isVisible.value = false
         }
     }
 
     @Composable
     override fun Render() {
-        var localVisible by remember { mutableStateOf(false) }
-
         getContents().forEach { content ->
-            LaunchedEffect(content.isVisible) {
-                localVisible = content.isVisible
-                if (!content.isVisible) {
+            var localVisible by remember { mutableStateOf(false) }
+            val isVisible by content.isVisible
+
+            LaunchedEffect(isVisible) {
+                localVisible = isVisible
+                if (!isVisible) {
                     delay(0.2.seconds)
                     content.dismiss()
                 }
@@ -117,7 +128,6 @@ class BottomSheetScope : OverlayScope<BottomSheetScope.BottomSheetContent>() {
                             clickableNoRipple { content.hide() }
                         }
                 )
-
                 AnimatedVisibility(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     visible = localVisible,
@@ -128,12 +138,58 @@ class BottomSheetScope : OverlayScope<BottomSheetScope.BottomSheetContent>() {
                         targetOffsetY = { fullHeight -> fullHeight }
                     ),
                 ) {
-                    BottomSheetSkeleton(
+                    Column(
                         modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .clickableNoRipple {/*  시트 내부 클릭 이벤트를 소모해 외부 클릭 이벤트가 트리거되지 않도록 함 */ }
-                    ) { content.composable(content.id) }
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter),
+                    ) {
+                        BottomSheetHeader(isDraggable = content.isDraggable) { content.hide() }
+                        BottomSheetSkeleton(
+                            modifier = Modifier.clickableNoRipple {/*  시트 내부 클릭 이벤트를 소모해 외부 클릭 이벤트가 트리거되지 않도록 함 */ }
+                        ) { content.composable(content.id) }
+                    }
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun BottomSheetHeader(
+        modifier: Modifier = Modifier,
+        backgroundColor: Color = DSColors.Background,
+        shape: Shape = RoundedCornerShape(16.dp),
+        isDraggable: Boolean = true,
+        onDrag: () -> Unit,
+    ) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(24.dp)
+                .background(
+                    color = backgroundColor,
+                    shape = shape,
+                )
+                .condition(isDraggable) {
+                    pointerInput(Unit) {
+                        detectVerticalDragGestures { _, dragAmount ->
+                            if (dragAmount > 0) {
+                                onDrag()
+                            }
+                        }
+                    }
+                },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isDraggable) {
+                Box(
+                    modifier = Modifier
+                        .size(80.dp, 4.dp)
+                        .background(
+                            color = DSColors.Gray._500,
+                            shape = shape,
+                        )
+                )
             }
         }
     }
