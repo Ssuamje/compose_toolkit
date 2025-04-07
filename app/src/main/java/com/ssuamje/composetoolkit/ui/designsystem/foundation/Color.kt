@@ -1,9 +1,15 @@
 package com.ssuamje.composetoolkit.ui.designsystem.foundation
 
 import androidx.compose.ui.graphics.Color
+import com.ssuamje.composetoolkit.extensions.opacity
 
 object DSColors {
+
+    //Semantics
     val Background = hexColor("#121315")
+    val Dimmed = Color.Black.opacity(0.5f)
+
+    //Colors
     val White = hexColor("#FAFAFA")
     val Black = hexColor("#1F2023")
 
