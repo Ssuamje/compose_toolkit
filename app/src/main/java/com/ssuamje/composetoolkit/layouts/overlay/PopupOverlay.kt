@@ -48,7 +48,7 @@ fun PopUpOverlayPreview() {
         ) {
             Button(
                 onClick = {
-                    popupScope.open(popupScope.PopupContent {
+                    popupScope.open(popupScope.Content {
                         PopupSkeleton(backgroundColor = DSColors.Green._400) {
                             fun getRandomColor(): Color {
                                 return listOf(
@@ -83,9 +83,14 @@ fun PopUpOverlayPreview() {
 
 val LocalPopupScope = staticCompositionLocalOf<PopupScope> { error("PopupScope not provided") }
 
-class PopupScope : OverlayScope<PopupScope.PopupContent>() {
+@Composable
+fun rememberPopupScope(): PopupScope {
+    return remember { PopupScope() }
+}
 
-    inner class PopupContent(
+class PopupScope : OverlayScope<PopupScope.Content>() {
+
+    inner class Content(
         override val id: OverlayId = OverlayId(),
         val isBackgroundClickDismissable: Boolean = true,
         val isBackgroundDimmed: Boolean = true,

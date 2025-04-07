@@ -43,11 +43,42 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssuamje.composetoolkit.extensions.clickableNoRipple
 import com.ssuamje.composetoolkit.extensions.condition
+import com.ssuamje.composetoolkit.ui.designsystem.foundation.ComposeToolkitTheme
 import com.ssuamje.composetoolkit.ui.designsystem.foundation.DSColors
 import com.ssuamje.composetoolkit.ui.designsystem.foundation.DSFonts
 import com.ssuamje.composetoolkit.ui.designsystem.foundation.styleText
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
+
+@Preview
+@Composable
+fun LocalBottomSheetScopePreview() {
+    ComposeToolkitTheme {
+        val bottomSheetScope = LocalBottomSheetScope.current
+        var text by remember { mutableStateOf("눌러서 느낌표 더하기") }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(DSColors.Background),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(
+                onClick = {
+                    bottomSheetScope.open(
+                        bottomSheetScope.Content {
+                            Text(text.styleText {
+                                +DSFonts.Title.M
+                                +DSColors.White
+                            }, modifier = Modifier.clickableNoRipple { text += "!" })
+                        }
+                    )
+                }
+            ) { Text("Click here to show bottom sheet") }
+        }
+    }
+}
 
 @Preview
 @Composable
@@ -67,7 +98,7 @@ fun BottomSheetOverlayPreview() {
             Button(
                 onClick = {
                     bottomSheetScope.open(
-                        bottomSheetScope.BottomSheetContent {
+                        bottomSheetScope.Content {
                             Text("안녕하세요".styleText {
                                 +DSFonts.Title.M
                                 +DSColors.White
@@ -83,8 +114,13 @@ fun BottomSheetOverlayPreview() {
 val LocalBottomSheetScope =
     staticCompositionLocalOf<BottomSheetScope> { error("BottomSheetScope not provided") }
 
-class BottomSheetScope : OverlayScope<BottomSheetScope.BottomSheetContent>() {
-    inner class BottomSheetContent(
+@Composable
+fun rememberBottomSheetScope(): BottomSheetScope {
+    return remember { BottomSheetScope() }
+}
+
+class BottomSheetScope : OverlayScope<BottomSheetScope.Content>() {
+    inner class Content(
         override val id: OverlayId = OverlayId(),
         val isBackgroundClickDismissable: Boolean = true,
         val isBackgroundDimmed: Boolean = true,
