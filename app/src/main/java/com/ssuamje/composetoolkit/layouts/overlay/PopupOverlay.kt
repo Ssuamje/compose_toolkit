@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,7 +48,7 @@ fun PopUpOverlayPreview() {
         ) {
             Button(
                 onClick = {
-                    popupScope.open(popupScope.PopupContent {
+                    popupScope.open(popupScope.Content {
                         PopupSkeleton(backgroundColor = DSColors.Green._400) {
                             fun getRandomColor(): Color {
                                 return listOf(
@@ -80,9 +81,16 @@ fun PopUpOverlayPreview() {
     }
 }
 
-class PopupScope : OverlayScope<PopupScope.PopupContent>() {
+val LocalPopupScope = staticCompositionLocalOf<PopupScope> { error("PopupScope not provided") }
 
-    inner class PopupContent(
+@Composable
+fun rememberPopupScope(): PopupScope {
+    return remember { PopupScope() }
+}
+
+class PopupScope : OverlayScope<PopupScope.Content>() {
+
+    inner class Content(
         override val id: OverlayId = OverlayId(),
         val isBackgroundClickDismissable: Boolean = true,
         val isBackgroundDimmed: Boolean = true,

@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
@@ -36,6 +37,13 @@ abstract class OverlayScope<T : OverlayContent> {
         contents.clear()
     }
 
+    open fun update(id: OverlayId, content: T) {
+        val index = contents.indexOfFirst { it.id == id }
+        if (index != -1) {
+            contents[index] = content
+        }
+    }
+
     @Composable
     protected fun getContents(): SnapshotStateList<T> = contents
 
@@ -55,6 +63,15 @@ interface BackgroundClickDismissable {
 
 val LocalOverlayProvider =
     staticCompositionLocalOf<OverlayProvider> { error("No OverlayProvider provided") }
+
+@Composable
+fun rememberOverlayProvider(
+    vararg scopes: OverlayScope<*>,
+): OverlayProvider {
+    return remember(scopes) {
+        OverlayProvider(scopes.toList())
+    }
+}
 
 class OverlayProvider(
     private val scopes: List<OverlayScope<*>>,
