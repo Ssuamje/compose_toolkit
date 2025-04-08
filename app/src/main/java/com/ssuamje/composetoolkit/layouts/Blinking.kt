@@ -21,15 +21,15 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun Blinking(
-    onAppear: (() -> Unit)? = null,
-    onDisappear: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
     appearTransitionDuration: Duration = 0.3.seconds,
     disappearTransitionDuration: Duration = 0.3.seconds,
     appearTransition: EnterTransition = fadeIn(animationSpec = tween(durationMillis = appearTransitionDuration.inWholeMilliseconds.toInt())),
     disappearTransition: ExitTransition = fadeOut(animationSpec = tween(durationMillis = disappearTransitionDuration.inWholeMilliseconds.toInt())),
     appearDuration: Duration = 2.seconds,
     disappearDuration: Duration = 1.seconds,
-    modifier: Modifier = Modifier,
+    onAppear: (() -> Unit)? = null,
+    onDisappear: (() -> Unit)? = null,
     content: (@Composable () -> Unit)? = null,
 ) {
     var isVisible by remember { mutableStateOf(false) }
