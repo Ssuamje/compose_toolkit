@@ -19,7 +19,7 @@ import kotlin.time.Duration
 
 // Dependencies: com.airbnb.android:lottie-compose
 @Composable
-fun Animation(
+fun LottieAnimation(
     @RawRes resInt: Int,
     modifier: Modifier = Modifier,
     iterations: Int = LottieConstants.IterateForever,
