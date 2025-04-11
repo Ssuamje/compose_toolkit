@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Compose Toolkit</string>
     <string name="test_with_two_strings">%s &amp; %s</string>
+
+    <string name="test_localized_layout">{3} {2} {1}</string>
+    <string name="test_localized_1">1 - in my house</string>
+    <string name="test_localized_2">2 - everyday</string>
+    <string name="test_localized_3">3 - I was alone</string>
+
 </resources>
