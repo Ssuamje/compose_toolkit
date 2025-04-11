@@ -23,6 +23,9 @@ import java.util.Locale
 
 typealias LayoutKey = String
 
+// (설치된 앱)에서 - In (Installed Apps) {title} {description} - {description} {title}
+// (터닝)을 찾아주세요 - Find (Turning)
+
 @Preview
 @Composable
 fun LocalizedLayoutPreview() {

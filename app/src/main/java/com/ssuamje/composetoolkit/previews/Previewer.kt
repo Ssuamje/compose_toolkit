@@ -18,6 +18,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.ssuamje.composetoolkit.layouts.overlay.LocalBottomSheetScope
+import com.ssuamje.composetoolkit.layouts.overlay.LocalOverlayProvider
+import com.ssuamje.composetoolkit.layouts.overlay.LocalPopupScope
+import com.ssuamje.composetoolkit.layouts.overlay.rememberBottomSheetScope
+import com.ssuamje.composetoolkit.layouts.overlay.rememberOverlayProvider
+import com.ssuamje.composetoolkit.layouts.overlay.rememberPopupScope
 import java.util.Locale
 
 @SuppressLint("ConstantLocale")
@@ -27,23 +33,33 @@ object Previewer {
     @Composable
     fun Theme(
         modifier: Modifier = Modifier,
+        showUtilView: Boolean = false,
         content: @Composable () -> Unit,
     ) {
         val context = LocalContext.current
         val locale = locale
         val localizedContext = remember(locale) { context.withLocale(locale) }
 
+        val popupScope = rememberPopupScope()
+        val bottomSheetScope = rememberBottomSheetScope()
+        val overlayProvider = rememberOverlayProvider(popupScope, bottomSheetScope)
+
         CompositionLocalProvider(
             LocalContext provides localizedContext,
+            LocalOverlayProvider provides overlayProvider,
+            LocalPopupScope provides popupScope,
+            LocalBottomSheetScope provides bottomSheetScope,
         ) {
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
-            ) {
-                key(locale) {
-                    content()
+            overlayProvider.Scaffolding {
+                Box(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .navigationBarsPadding()
+                ) {
+                    key(locale) {
+                        content()
+                    }
                 }
             }
         }
