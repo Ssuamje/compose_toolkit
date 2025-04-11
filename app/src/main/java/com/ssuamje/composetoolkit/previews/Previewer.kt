@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -21,7 +22,7 @@ import java.util.Locale
 
 @SuppressLint("ConstantLocale")
 object Previewer {
-    private var locale by mutableStateOf(Locale.getDefault())
+    var locale by mutableStateOf(Locale.getDefault())
 
     @Composable
     fun Theme(
@@ -41,7 +42,9 @@ object Previewer {
                     .statusBarsPadding()
                     .navigationBarsPadding()
             ) {
-                content()
+                key(locale) {
+                    content()
+                }
             }
         }
     }

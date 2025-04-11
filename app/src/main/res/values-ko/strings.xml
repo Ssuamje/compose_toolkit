@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Compose Toolkit</string>
+    <string name="test_with_two_strings">%s &amp; %s</string>
+
+    <string name="test_localized_layout">{1} {2} {3}</string>
+    <string name="test_localized_1">1 - 우리집엔</string>
+    <string name="test_localized_2">2 - 매일</string>
+    <string name="test_localized_3">3 - 나홀로 있었지</string>
+
+</resources>
