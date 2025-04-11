@@ -10,9 +10,14 @@ fun AnnotatedString.styleText(block: StyleTagScope.() -> Unit): AnnotatedString 
     return this.applyStyles(scope.styles)
 }
 
+fun String.isStyled(): Boolean {
+    return isTagValid(this)
+}
+
 fun String.styleText(block: StyleTagScope.() -> Unit): AnnotatedString {
     val scope = StyleTagScope().apply(block)
-    return this.applyStyles(scope.styles)
+    return if (this.isStyled()) this.applyMarkup().applyStyles(scope.styles)
+    else this.applyStyles(scope.styles)
 }
 
 class StyleTagScope {

@@ -204,7 +204,7 @@ fun String.applyMarkup(): AnnotatedString {
     return builder.toAnnotatedString()
 }
 
-private fun isTagValid(markedUp: String): Boolean {
+fun isTagValid(markedUp: String): Boolean {
     val errors = mutableListOf<String>()
     val tagStack = mutableListOf<String>()
     var tagSize = 0
