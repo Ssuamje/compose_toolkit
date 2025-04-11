@@ -3,10 +3,6 @@ package com.ssuamje.composetoolkit.composables
 import androidx.annotation.RawRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import com.airbnb.lottie.compose.LottieAnimation
@@ -32,7 +28,6 @@ fun LottieAnimation(
 ) {
     val compositionResult = rememberLottieComposition(LottieCompositionSpec.RawRes(resInt))
     val composition = compositionResult.value
-    var isPaused by remember { mutableStateOf(false) }
 
     val speed = if (desiredIterationDuration != null && composition != null) {
         val compositionDurationMillis = composition.duration
@@ -49,9 +44,7 @@ fun LottieAnimation(
 
     if (animationState.isAtEnd && !animationState.isPlaying && iterations != LottieConstants.IterateForever) {
         LaunchedEffect(animationState.progress) {
-            isPaused = true
             if (pauseAfterIterationDuration != Duration.ZERO) delay(pauseAfterIterationDuration)
-            isPaused = false
             if (animationState.progress == 1f) onAnimationEnd()
         }
     }
