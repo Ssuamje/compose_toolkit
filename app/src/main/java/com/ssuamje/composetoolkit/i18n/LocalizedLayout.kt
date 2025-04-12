@@ -127,10 +127,12 @@ object LocalizedLayoutManager {
 
 
 class LocalizedLayoutScope<T> {
-    val layoutComposables = mutableListOf<Pair<LayoutKey, @Composable T.() -> Unit>>()
+    private val _layoutComposables: MutableMap<LayoutKey, @Composable T.() -> Unit> = mutableMapOf()
+    val layoutComposables: Map<LayoutKey, @Composable T.() -> Unit>
+        get() = _layoutComposables.toMap()
 
     fun provide(key: LayoutKey, block: @Composable T.() -> Unit) {
-        layoutComposables.add(key to block)
+        _layoutComposables[key] = block
     }
 }
 
@@ -147,9 +149,8 @@ inline fun <reified T> LocalizedLayout(
     val scope = remember(content) { LocalizedLayoutScope<T>().apply(content) }
     val localized = rememberLocalizedString(layoutResId)
     val keys = LocalizedLayoutManager.rememberLayoutKeys(localized)
-    val layoutComposablesMap = remember(scope) { scope.layoutComposables.toMap() }
 
     keys.forEach { key ->
-        layoutComposablesMap[key]?.invoke(parent)
+        scope.layoutComposables[key]?.invoke(parent)
     }
 }
