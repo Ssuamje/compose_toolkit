@@ -28,48 +28,45 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssuamje.composetoolkit.extensions.clickableNoRipple
 import com.ssuamje.composetoolkit.extensions.condition
+import com.ssuamje.composetoolkit.previews.Previewer
 import com.ssuamje.composetoolkit.ui.designsystem.foundation.DSColors
 import com.ssuamje.composetoolkit.ui.designsystem.foundation.styleText
 
 @Preview
 @Composable
 fun PopUpOverlayPreview() {
-    val popupScope = PopupScope()
-    val overlayProvider = OverlayProvider(listOf(popupScope))
-
-    overlayProvider.Scaffolding { paddingValues ->
+    Previewer.Theme {
+        val popupScope = LocalPopupScope.current
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black)
-                .padding(paddingValues),
+                .background(Color.Black),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
                 onClick = {
-                    popupScope.open(popupScope.Content {
-                        PopupSkeleton(backgroundColor = DSColors.Green._400) {
-                            fun getRandomColor(): Color {
-                                return listOf(
-                                    Color.Black,
-                                    Color.Green,
-                                    Color.Red,
-                                    Color.White
-                                ).random()
-                            }
+                    popupScope.open {
 
-                            var color by remember { mutableStateOf(getRandomColor()) }
-
-
-                            Text("Click here to recompose with random color"
-                                .styleText { +color },
-                                modifier = Modifier.clickableNoRipple {
-                                    color = getRandomColor()
-                                }
-                            )
+                        fun getRandomColor(): Color {
+                            return listOf(
+                                Color.Black,
+                                Color.Green,
+                                Color.Red,
+                                Color.White
+                            ).random()
                         }
-                    })
+
+                        var color by remember { mutableStateOf(getRandomColor()) }
+
+
+                        Text("Click here to recompose with random color"
+                            .styleText { +color },
+                            modifier = Modifier.clickableNoRipple {
+                                color = getRandomColor()
+                            }
+                        )
+                    }
                 }
             ) {
                 Text("add random item, click to delete")
@@ -88,10 +85,27 @@ fun rememberPopupScope(): PopupScope {
     return remember { PopupScope() }
 }
 
+fun PopupScope.open(
+    isBackgroundClickDismissable: Boolean = true,
+    isBackgroundDimmed: Boolean = true,
+    isFramed: Boolean = false,
+    content: @Composable (OverlayId) -> Unit,
+) {
+    open(
+        Content(
+            isFramed = isFramed,
+            isBackgroundClickDismissable = isBackgroundClickDismissable,
+            isBackgroundDimmed = isBackgroundDimmed,
+            composable = content
+        )
+    )
+}
+
 class PopupScope : OverlayScope<PopupScope.Content>() {
 
     inner class Content(
         override val id: OverlayId = OverlayId(),
+        val isFramed: Boolean = false,
         val isBackgroundClickDismissable: Boolean = true,
         val isBackgroundDimmed: Boolean = true,
         override val dismiss: () -> Unit = { close(id) },
@@ -120,7 +134,10 @@ class PopupScope : OverlayScope<PopupScope.Content>() {
                     modifier = Modifier
                         .align(Alignment.Center)
                         .clickableNoRipple {/*  팝업 내부 클릭 이벤트를 소모해 외부 클릭 이벤트가 트리거되지 않도록 함 */ }
-                ) { content.composable(content.id) }
+                ) {
+                    if (content.isFramed) PopupSkeleton { content.composable(content.id) }
+                    else content.composable(content.id)
+                }
             }
         }
     }

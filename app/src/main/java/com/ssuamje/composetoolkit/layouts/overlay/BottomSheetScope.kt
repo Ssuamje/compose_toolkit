@@ -119,12 +119,29 @@ fun rememberBottomSheetScope(): BottomSheetScope {
     return remember { BottomSheetScope() }
 }
 
+fun BottomSheetScope.open(
+    isBackgroundDimmed: Boolean = true,
+    isDraggable: Boolean = true,
+    isBackgroundClickDismissable: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    val overlayContent = Content(
+        isBackgroundDimmed = isBackgroundDimmed,
+        isDraggable = isDraggable,
+        isBackgroundClickDismissable = isBackgroundClickDismissable,
+        composable = { _ -> content() }
+    )
+    open(overlayContent)
+}
+
 class BottomSheetScope : OverlayScope<BottomSheetScope.Content>() {
+
     inner class Content(
         override val id: OverlayId = OverlayId(),
         val isBackgroundClickDismissable: Boolean = true,
         val isBackgroundDimmed: Boolean = true,
         val isDraggable: Boolean = true,
+        val isHeightConstrained: Boolean = false,
         private val _isVisible: MutableState<Boolean> = mutableStateOf(true),
         val isVisible: State<Boolean> = _isVisible,
         override val dismiss: () -> Unit = {
@@ -181,6 +198,7 @@ class BottomSheetScope : OverlayScope<BottomSheetScope.Content>() {
                     ) {
                         BottomSheetHeader(isDraggable = content.isDraggable) { content.hide() }
                         BottomSheetSkeleton(
+                            isHeightConstrained = content.isHeightConstrained,
                             modifier = Modifier.clickableNoRipple {/*  시트 내부 클릭 이벤트를 소모해 외부 클릭 이벤트가 트리거되지 않도록 함 */ }
                         ) { content.composable(content.id) }
                     }
