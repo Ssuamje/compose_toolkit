@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.ssuamje.composetoolkit.R
 import com.ssuamje.composetoolkit.i18n.rememberLocalizedString
 import com.ssuamje.composetoolkit.layouts.overlay.LocalBottomSheetScope
+import com.ssuamje.composetoolkit.layouts.overlay.open
 import com.ssuamje.composetoolkit.ui.designsystem.foundation.DSColors
 import java.util.Locale
 
@@ -28,16 +28,13 @@ fun PreviewUtilSheetPreview() {
         val bottomSheetScope = LocalBottomSheetScope.current
 
         val lambda = {
-            bottomSheetScope.open(
-                bottomSheetScope.Content {
-                    PreviewUtilSheet { }
+            bottomSheetScope.open {
+                PreviewUtilSheet {
+                    Previewer.locale = it
                 }
-            )
+            }
         }
 
-        LaunchedEffect(Unit) {
-            lambda()
-        }
 
         Column(
             modifier = Modifier
@@ -65,7 +62,6 @@ fun PreviewUtilSheet(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
