@@ -25,8 +25,6 @@ import com.ssuamje.composetoolkit.ui.designsystem.foundation.DSFonts
 import com.ssuamje.composetoolkit.ui.designsystem.foundation.styleText
 import java.util.Locale
 
-typealias LayoutKey = String
-
 // (설치된 앱)에서 - In (Installed Apps) {title} {description} - {description} {title}
 // (터닝)을 찾아주세요 - Find (Turning)
 
@@ -59,7 +57,7 @@ fun LocalizedLayoutPreview() {
                 layoutResId = R.string.test_localized_layout,
                 parent = this@Column
             ) {
-                provide("1") {
+                provide(LayoutKey.`1`) {
                     val origin = rememberLocalizedString(R.string.test_localized_1)
                     var text by remember { mutableStateOf(origin) }
                     Text(
@@ -70,7 +68,7 @@ fun LocalizedLayoutPreview() {
                         modifier = Modifier.clickableNoRipple { text += "!" }
                     )
                 }
-                provide("2") {
+                provide(LayoutKey.`2`) {
                     val origin = rememberLocalizedString(R.string.test_localized_2)
                     var text by remember { mutableStateOf(origin) }
                     Text(
@@ -81,7 +79,7 @@ fun LocalizedLayoutPreview() {
                         modifier = Modifier.clickableNoRipple { text += "!" }
                     )
                 }
-                provide("3") {
+                provide(LayoutKey.`3`) {
                     val origin = rememberLocalizedString(R.string.test_localized_3)
                     var text by remember { mutableStateOf(origin) }
                     Text(
@@ -95,6 +93,15 @@ fun LocalizedLayoutPreview() {
             }
         }
     }
+}
+
+enum class LayoutKey(val key: String) {
+    `1`("1"),
+    `2`("2"),
+    `3`("3"),
+    TITLE("title"),
+    DESCRIPTION("description"),
+    ;
 }
 
 /**
@@ -111,23 +118,33 @@ object LocalizedLayoutManager {
     fun rememberLayoutKeys(localizedLayoutResource: String): List<LayoutKey> {
         if (!::availableKeys.isInitialized) {
             availableKeys = extractKeys(getLocalizedString(availableKeysResource))
+            require(availableKeys.all { it in LayoutKey.entries }) {
+                "Available keys in $availableKeysResource " +
+                        "must be defined in ${LayoutKey::class.simpleName} enum class."
+            }
         }
         val extractedKeys = extractKeys(localizedLayoutResource)
-        require(extractedKeys.all { it in availableKeys }) {
-            "Invalid layout key found in $localizedLayoutResource. " +
-                    "Available keys are: $availableKeys"
-        }
         return remember(localizedLayoutResource) { extractedKeys }
     }
 
     private fun extractKeys(input: String): List<LayoutKey> {
-        return regex.findAll(input).map { it.groupValues[1] }.toList()
+        return regex.findAll(input)
+            .map { it.groupValues[1] }
+            .map { key ->
+                LayoutKey.entries.find { it.key == key }
+                    ?: throw IllegalArgumentException(
+                        "Invalid key: $key. " +
+                                "Available keys are: ${LayoutKey.entries.joinToString { it.key }}"
+                    )
+            }
+            .toList()
     }
 }
 
 
 class LocalizedLayoutScope<T> {
-    private val _layoutComposables: MutableMap<LayoutKey, @Composable T.() -> Unit> = mutableMapOf()
+    private val _layoutComposables: MutableMap<LayoutKey, @Composable T.() -> Unit> =
+        mutableMapOf()
     val layoutComposables: Map<LayoutKey, @Composable T.() -> Unit>
         get() = _layoutComposables.toMap()
 
