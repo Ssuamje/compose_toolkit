@@ -16,26 +16,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssuamje.composetoolkit.R
 import com.ssuamje.composetoolkit.i18n.rememberLocalizedString
-import com.ssuamje.composetoolkit.layouts.overlay.LocalBottomSheetScope
-import com.ssuamje.composetoolkit.layouts.overlay.open
 import com.ssuamje.composetoolkit.ui.designsystem.foundation.DSColors
+import com.ssuamje.composetoolkit.ui.designsystem.foundation.DSFonts
+import com.ssuamje.composetoolkit.ui.designsystem.foundation.styleText
 import java.util.Locale
 
 @Preview
 @Composable
 fun PreviewUtilSheetPreview() {
-    Previewer.Theme {
-        val bottomSheetScope = LocalBottomSheetScope.current
-
-        val lambda = {
-            bottomSheetScope.open {
-                PreviewUtilSheet {
-                    Previewer.locale = it
-                }
-            }
-        }
-
-
+    Previewer.Theme(showUtilView = true) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -43,11 +32,10 @@ fun PreviewUtilSheetPreview() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(
-                onClick = { lambda() }
-            ) {
-                Text(rememberLocalizedString(stringRes = R.string.test_localized_1))
-            }
+            Text(rememberLocalizedString(stringRes = R.string.test_localized_1).styleText {
+                +DSFonts.Title.L
+                +DSColors.White
+            })
         }
     }
 }
@@ -64,7 +52,7 @@ fun PreviewUtilSheet(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
