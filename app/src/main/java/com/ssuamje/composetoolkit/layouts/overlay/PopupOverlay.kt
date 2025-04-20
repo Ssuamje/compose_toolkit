@@ -60,8 +60,9 @@ fun PopUpOverlayPreview() {
                         var color by remember { mutableStateOf(getRandomColor()) }
 
 
-                        Text("Click here to recompose with random color"
-                            .styleText { +color },
+                        Text(
+                            "Click here to recompose with random color"
+                                .styleText { +color },
                             modifier = Modifier.clickableNoRipple {
                                 color = getRandomColor()
                             }
@@ -108,9 +109,10 @@ class PopupScope : OverlayScope<PopupScope.Content>() {
         val isFramed: Boolean = false,
         val isBackgroundClickDismissable: Boolean = true,
         val isBackgroundDimmed: Boolean = true,
-        override val dismiss: () -> Unit = { close(id) },
         override val composable: @Composable ((OverlayId) -> Unit),
-    ) : OverlayContent
+    ) : OverlayContent {
+        override fun dismiss() = close(id)
+    }
 
     @Composable
     override fun Render() {

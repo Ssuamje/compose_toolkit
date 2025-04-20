@@ -53,8 +53,9 @@ abstract class OverlayScope<T : OverlayContent> {
 
 interface OverlayContent {
     val id: OverlayId
-    val dismiss: () -> Unit
     val composable: @Composable (OverlayId) -> Unit
+
+    fun dismiss()
 }
 
 interface BackgroundClickDismissable {

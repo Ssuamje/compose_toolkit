@@ -97,14 +97,13 @@ fun BottomSheetOverlayPreview() {
         ) {
             Button(
                 onClick = {
-                    bottomSheetScope.open(
-                        bottomSheetScope.Content {
-                            Text("안녕하세요".styleText {
-                                +DSFonts.Title.M
-                                +DSColors.White
-                            })
-                        }
-                    )
+                    bottomSheetScope.open {
+                        Text("안녕하세요".styleText {
+                            +DSFonts.Title.M
+                            +DSColors.White
+                        })
+                        bottomSheetScope.close(it)
+                    }
                 }
             ) { Text("Click here to show bottom sheet") }
         }
@@ -123,13 +122,13 @@ fun BottomSheetScope.open(
     isBackgroundDimmed: Boolean = true,
     isDraggable: Boolean = true,
     isBackgroundClickDismissable: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable (OverlayId) -> Unit
 ) {
     val overlayContent = Content(
         isBackgroundDimmed = isBackgroundDimmed,
         isDraggable = isDraggable,
         isBackgroundClickDismissable = isBackgroundClickDismissable,
-        composable = { _ -> content() }
+        composable = { id -> content(id) }
     )
     open(overlayContent)
 }
@@ -144,11 +143,10 @@ class BottomSheetScope : OverlayScope<BottomSheetScope.Content>() {
         val isHeightConstrained: Boolean = false,
         private val _isVisible: MutableState<Boolean> = mutableStateOf(true),
         val isVisible: State<Boolean> = _isVisible,
-        override val dismiss: () -> Unit = {
-            close(id)
-        },
         override val composable: @Composable (OverlayId) -> Unit
     ) : OverlayContent {
+
+        override fun dismiss(): Unit = close(id)
         fun hide() {
             _isVisible.value = false
         }
